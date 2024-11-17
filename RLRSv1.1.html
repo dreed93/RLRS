@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Life Tracker App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f9f9f9;
+      color: #333;
+    }
+    header {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 1rem;
+    }
+    .container {
+      padding: 2rem;
+    }
+    .category {
+      margin-bottom: 2rem;
+      padding: 1rem;
+      background-color: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .category h2 {
+      margin-top: 0;
+    }
+    button {
+      padding: 10px 20px;
+      background-color: #007BFF;
+      color: #fff;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px 0;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .progress-bar {
+      margin: 10px 0;
+      background-color: #ddd;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .progress-bar span {
+      display: block;
+      height: 20px;
+      background-color: #28a745;
+      text-align: center;
+      color: #fff;
+      white-space: nowrap;
+    }
+    footer {
+      text-align: center;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Life Tracker App</h1>
+    <p>Gamify your growth and achieve your goals</p>
+  </header>
+
+  <div class="container">
+    <section class="summary">
+      <h2>Overall Progress</h2>
+      <p>Total XP: <span id="total-xp">0</span></p>
+      <p>Total Level: <span id="total-level">1</span></p>
+      <button onclick="clearProgress()">Reset Progress</button>
+    </section>
+
+    <!-- Dynamically Generated Categories -->
+    <div id="categories"></div>
+  </div>
+
+  <footer>
+    <p>Keep growing, one XP at a time!</p>
+  </footer>
+
+  <script>
+    // Global Variables
+    const categories = {
+      strength: { xp: 0, level: 1, tasks: [
+        { name: 'Short Walk', xp: 300 },
+        { name: 'Long Walk', xp: 500 },
+        { name: 'Running', xp: 800 }
+      ]},
+      meditation: { xp: 0, level: 1, tasks: [
+        { name: '5-Minute Breathing', xp: 200 },
+        { name: '10-Minute Meditation', xp: 400 }
+      ]},
+      cooking: { xp: 0, level: 1, tasks: [
+        { name: 'Cook a New Recipe', xp: 300 },
+        { name: 'Bake Something', xp: 400 }
+      ]},
+      reading: { xp: 0, level: 1, tasks: [
+        { name: 'Read 10 Pages', xp: 200 },
+        { name: 'Listen to Audiobook (30 min)', xp: 300 }
+      ]},
+      learning: { xp: 0, level: 1, tasks: [
+        { name: 'Learn a New Skill (30 min)', xp: 500 },
+        { name: 'Watch an Educational Video', xp: 300 }
+      ]},
+      socializing: { xp: 0, level: 1, tasks: [
+        { name: 'Call a Friend', xp: 200 },
+        { name: 'Attend a Social Event', xp: 500 }
+      ]},
+      creativity: { xp: 0, level: 1, tasks: [
+        { name: 'Draw or Sketch', xp: 300 },
+        { name: 'Write a Journal Entry', xp: 200 }
+      ]},
+      productivity: { xp: 0, level: 1, tasks: [
+        { name: 'Organize Workspace', xp: 200 },
+        { name: 'Complete a Project', xp: 500 }
+      ]},
+      finance: { xp: 0, level: 1, tasks: [
+        { name: 'Budget for the Month', xp: 400 },
+        { name: 'Save $100', xp: 500 }
+      ]},
+      travel: { xp: 0, level: 1, tasks: [
+        { name: 'Plan a Trip', xp: 300 },
+        { name: 'Explore a New Place', xp: 500 }
+      ]},
+      family: { xp: 0, level: 1, tasks: [
+        { name: 'Spend Quality Time Together', xp: 400 },
+        { name: 'Help with Homework', xp: 200 }
+      ]},
+      mental_health: { xp: 0, level: 1, tasks: [
+        { name: 'Practice Gratitude', xp: 200 },
+        { name: 'Reflect on Goals', xp: 300 }
+      ]},
+      sleep: { xp: 0, level: 1, tasks: [
+        { name: 'Get 7+ Hours of Sleep', xp: 400 },
+        { name: 'Track Sleep Patterns', xp: 200 }
+      ]},
+      hygiene: { xp: 0, level: 1, tasks: [
+        { name: 'Morning Routine', xp: 200 },
+        { name: 'Skincare Routine', xp: 200 }
+      ]},
+      gardening: { xp: 0, level: 1, tasks: [
+        { name: 'Water Plants', xp: 200 },
+        { name: 'Trim or Prune', xp: 300 }
+      ]},
+      gaming: { xp: 0, level: 1, tasks: [
+        { name: 'Play a New Game', xp: 300 },
+        { name: 'Complete a Game Level', xp: 400 }
+      ]},
+      flexibility: { xp: 0, level: 1, tasks: [
+        { name: 'Stretch (10 min)', xp: 300 },
+        { name: 'Yoga Session', xp: 500 }
+      ]},
+      cardio: { xp: 0, level: 1, tasks: [
+        { name: 'Peloton Ride (30 min)', xp: 500 },
+        { name: 'Jogging', xp: 300 }
+      ]},
+      core: { xp: 0, level: 1, tasks: [
+        { name: 'Plank (30 sec)', xp: 200 },
+        { name: 'Bird Dogs', xp: 300 }
+      ]},
+      miscellaneous: { xp: 0, level: 1, tasks: [
+        { name: 'Try Something New', xp: 300 },
+        { name: 'Random Act of Kindness', xp: 400 }
+      ]}
+    };
+
+    // XP Scaling Formula
+    function calculateNextLevelXP(level) {
+      return Math.floor(5000 * level * Math.log(level + 1));
+    }
+
+    // Update Category UI
+    function updateCategoryUI(category) {
+      const data = categories[category];
+      const nextLevelXP = calculateNextLevelXP(data.level);
+      const progress = Math.min((data.xp / nextLevelXP) * 100, 100);
+
+      document.getElementById(`${category}-xp`).textContent = data.xp;
+      document.getElementById(`${category}-level`).textContent = data.level;
+      document.getElementById(`${category}-next-level`).textContent = nextLevelXP;
+      document.getElementById(`${category}-progress`).style.width = `${progress}%`;
+      document.getElementById(`${category}-progress`).textContent = `${Math.floor(progress)}%`;
+    }
+
+    // Update Overall Progress
+    function updateOverallProgress() {
+      const totalXP = Object.values(categories).reduce((sum, cat) => sum + cat.xp, 0);
+      const totalLevel = Object.values(categories).reduce((sum, cat) => sum + cat.level, 0) - 19;
+
+      document.getElementById("total-xp").textContent = totalXP;
+      document.getElementById("total-level").textContent = Math.max(totalLevel, 1);
+    }
+
+    // Handle Task Completion
+    function completeTask(category, xp) {
+      console.log(`Task completed in category: ${category}, XP gained: ${xp}`);
+
+      const data = categories[category];
+      if (!data) {
+        console.error(`Category "${category}" not found.`);
+        return;
+      }
+
+      const nextLevelXP = calculateNextLevelXP(data.level);
+
+      // Update XP and check for level-up
+      data.xp += xp;
+      while (data.xp >= nextLevelXP) {
+        data.xp -= nextLevelXP;
+        data.level++;
+      }
+
+      // Update the UI and save progress
+      updateCategoryUI(category);
+      updateOverallProgress();
+      saveProgress();
+    }
+
+    // Save progress to localStorage
+    function saveProgress() {
+      localStorage.setItem('lifeTrackerProgress', JSON.stringify(categories));
+    }
+
+    // Load progress from localStorage
+    function loadProgress() {
+      const savedProgress = localStorage.getItem('lifeTrackerProgress');
+      if (savedProgress) {
+        const parsedData = JSON.parse(savedProgress);
+        Object.keys(categories).forEach(category => {
+          if (parsedData[category]) {
+            categories[category].xp = parsedData[category].xp;
+            categories[category].level = parsedData[category].level;
+          }
+        });
+      }
+    }
+
+    // Clear all progress
+    function clearProgress() {
+      localStorage.removeItem('lifeTrackerProgress');
+      Object.keys(categories).forEach(category => {
+        categories[category].xp = 0;
+        categories[category].level = 1;
+      });
+      updateAllUI();
+    }
+
+    // Generate UI dynamically
+    const categoriesContainer = document.getElementById("categories");
+    Object.keys(categories).forEach(category => {
+      const data = categories[category];
+      const categoryDiv = document.createElement("div");
+      categoryDiv.className = "category";
+      categoryDiv.id = category;
+
+      categoryDiv.innerHTML = `
+        <h2>${category.replace('_', ' ').toUpperCase()}</h2>
+        <p>Level: <span id="${category}-level">1</span></p>
+        <p>XP: <span id="${category}-xp">0</span> / <span id="${category}-next-level">5000</span></p>
+        <div class="progress-bar">
+          <span id="${category}-progress" style="width: 0%;">0%</span>
+        </div>
+        <ul>
+          ${data.tasks.map(task => `
+            <li>
+              <button onclick="completeTask('${category}', ${task.xp})">${task.name} (+${task.xp} XP)</button>
+            </li>
+          `).join('')}
+        </ul>
+      `;
+
+      categoriesContainer.appendChild(categoryDiv);
+    });
+
+    // Load progress on page load
+    loadProgress();
+    Object.keys(categories).forEach(updateCategoryUI);
+    updateOverallProgress();
+  </script>
+</body>
+</html>
